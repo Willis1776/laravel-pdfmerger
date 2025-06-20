@@ -237,14 +237,13 @@ class PDFMerger
         $oFPDI->setTitle($this->fileName);
 
         $this->aFiles->each(function ($file) use ($oFPDI, $orientation, $duplexSafe) {
+            ray($file);
             $file['orientation'] = is_null($file['orientation']) ? $orientation : $file['orientation'];
             $extension = strtolower(pathinfo($file['name'])['extension']);
 
             if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-                $image = Image::make($file['name'])->resize(595, 842, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+                $image = Image::make($file['name'])
+                    ->pad(1056, 1632);
 
                 $tempImagePath = storage_path('app/temp_image.jpg');
                 $image->save($tempImagePath);
