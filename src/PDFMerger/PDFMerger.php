@@ -260,7 +260,7 @@ class PDFMerger
                 $image->save($tempImagePath);
 
                 $oFPDI->AddPage();
-                $oFPDI->Image($tempImagePath, 0, 0, 210);
+                $oFPDI->Image($file['name'], 0, 0, 230);
             } else if ($extension === 'pdf') {
                 $count = $oFPDI->setSourceFile(StreamReader::createByString(file_get_contents($file['name'])));
 
@@ -269,6 +269,7 @@ class PDFMerger
                     for ($i = 1; $i <= $count; $i++) {
                         $template = $oFPDI->importPage($i);
                         $size = $oFPDI->getTemplateSize($template);
+                        ray($size);
                         $autoOrientation = isset($file['orientation']) ? $file['orientation'] : $size['orientation'];
 
                         $oFPDI->AddPage($autoOrientation, [$size['width'], $size['height']]);
