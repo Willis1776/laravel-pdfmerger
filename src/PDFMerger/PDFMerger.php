@@ -242,24 +242,25 @@ class PDFMerger
             $extension = strtolower(pathinfo($file['name'])['extension']);
 
             if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-//                $image = Image::make($file['name'])
-//                    ->resize(1320, 2040, function ($constraint) {
-//                        $constraint->upsize();
-//                    });
-//
-//                $tempPath = (new TemporaryDirectory)
-//                    ->location(storage_path('pdf'))
-//                    ->name('temp')
-//                    ->force()
-//                    ->deleteWhenDestroyed()
-//                    ->create();
-//                $tempFileName = Str::random(8);
-//
-//                $tempImagePath = $tempPath->path() . "/image_$tempFileName.jpg";
-//                $image->save($tempImagePath);
+                $image = Image::make($file['name'])
+                    ->resize(1320, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+
+                $tempPath = (new TemporaryDirectory)
+                    ->location(storage_path('pdf'))
+                    ->name('temp')
+                    ->force()
+                    ->deleteWhenDestroyed()
+                    ->create();
+                $tempFileName = Str::random(8);
+
+                $tempImagePath = $tempPath->path() . "/image_$tempFileName.jpg";
+                $image->save($tempImagePath);
 
                 $oFPDI->AddPage();
-                $oFPDI->Image($file['name']);
+                $oFPDI->Image($tempImagePath, 0, 0, 1320, 2040);
             } else if ($extension === 'pdf') {
                 $count = $oFPDI->setSourceFile(StreamReader::createByString(file_get_contents($file['name'])));
 
