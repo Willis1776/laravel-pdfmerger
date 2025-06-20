@@ -19,6 +19,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Http\Response;
+use Spatie\TemporaryDirectory\TemporaryDirectory;
 
 class PDFMerger
 {
