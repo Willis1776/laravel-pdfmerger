@@ -237,19 +237,28 @@ class PDFMerger
         $oFPDI->setTitle($this->fileName);
 
         $this->aFiles->each(function ($file) use ($oFPDI, $orientation, $duplexSafe) {
-            ray($file);
             $file['orientation'] = is_null($file['orientation']) ? $orientation : $file['orientation'];
             $extension = strtolower(pathinfo($file['name'])['extension']);
 
             if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
                 $image = Image::make($file['name'])
-                    ->pad(1056, 1632);
+                    ->resize(792, 1224, function ($constraint) {
+                    $constraint->upsize();
+                });
 
-                $tempImagePath = storage_path('app/temp_image.jpg');
+                $tempPath = (new TemporaryDirectory)
+                    ->location(storage_path('pdf'))
+                    ->name('temp')
+                    ->force()
+                    ->deleteWhenDestroyed()
+                    ->create();
+                $tempFileName = Str::random(8);
+
+                $tempImagePath = $tempPath->path() . "/image_$tempFileName.jpg";
                 $image->save($tempImagePath);
 
                 $oFPDI->AddPage();
-                $oFPDI->Image($tempImagePath, 0, 0, 210, 297);
+                $oFPDI->Image($tempImagePath);
             } else if ($extension === 'pdf') {
                 $count = $oFPDI->setSourceFile(StreamReader::createByString(file_get_contents($file['name'])));
 
