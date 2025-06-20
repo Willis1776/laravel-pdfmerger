@@ -260,7 +260,7 @@ class PDFMerger
                 $image->save($tempImagePath);
 
                 $oFPDI->AddPage();
-                $oFPDI->Image($tempImagePath, 0, 0, 1320, 2040);
+                $oFPDI->Image($tempImagePath, 0, 0, 210, 297);
             } else if ($extension === 'pdf') {
                 $count = $oFPDI->setSourceFile(StreamReader::createByString(file_get_contents($file['name'])));
 
