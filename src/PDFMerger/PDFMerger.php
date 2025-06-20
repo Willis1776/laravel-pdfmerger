@@ -242,23 +242,6 @@ class PDFMerger
             $extension = strtolower(pathinfo($file['name'])['extension']);
 
             if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-                $image = Image::make($file['name'])
-                    ->resize(1320, null, function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
-
-                $tempPath = (new TemporaryDirectory)
-                    ->location(storage_path('pdf'))
-                    ->name('temp')
-                    ->force()
-                    ->deleteWhenDestroyed()
-                    ->create();
-                $tempFileName = Str::random(8);
-
-                $tempImagePath = $tempPath->path() . "/image_$tempFileName.jpg";
-                $image->save($tempImagePath);
-
                 $oFPDI->AddPage();
                 $oFPDI->Image($file['name'], 0, 0, 230);
             } else if ($extension === 'pdf') {
@@ -269,7 +252,6 @@ class PDFMerger
                     for ($i = 1; $i <= $count; $i++) {
                         $template = $oFPDI->importPage($i);
                         $size = $oFPDI->getTemplateSize($template);
-                        ray($size);
                         $autoOrientation = isset($file['orientation']) ? $file['orientation'] : $size['orientation'];
 
                         $oFPDI->AddPage($autoOrientation, [$size['width'], $size['height']]);
@@ -281,7 +263,6 @@ class PDFMerger
                             throw new \Exception("Could not load page '$page' in PDF '" . $file['name'] . "'. Check that the page exists.");
                         }
                         $size = $oFPDI->getTemplateSize($template);
-                        ray($size);
                         $autoOrientation = isset($file['orientation']) ? $file['orientation'] : $size['orientation'];
 
                         $oFPDI->AddPage($autoOrientation, [$size['width'], $size['height']]);
